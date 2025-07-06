@@ -14,7 +14,7 @@ def scrape_line_size(store_id):
 
     try:
         driver.get(url)
-        time.sleep(5)
+        time.sleep(3)
 
         element = driver.find_element(By.XPATH, "//*[contains(translate(text(), 'ABCDEFGHIJKLMNOPQRSTUVWXYZ', 'abcdefghijklmnopqrstuvwxyz'), 'in line')]")
         text = element.text.lower()
