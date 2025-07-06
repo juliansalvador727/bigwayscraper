@@ -5,6 +5,7 @@ class Restaurant:
         self.address = address
         self.parties_in_line = None
 
+    @property
     def name(self):
         return f"Big Way {self.city}"
     
