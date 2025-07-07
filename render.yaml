@@ -10,7 +10,7 @@ services:
     plan: starter
     envVars:
       - key: PYTHON_VERSION
-        value: 3.11.0
+        value: 3.11.7
       - key: PORT
         fromService:
           type: web
