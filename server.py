@@ -6,6 +6,7 @@ import logging
 import concurrent.futures
 from datetime import datetime
 from typing import List
+import os
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -77,14 +78,17 @@ def get_waitlist():
         restaurants = scrape_all_restaurants()
         end_time = datetime.now()
         
-        # Save to JSON file
+        # Save to JSON file (with error handling)
         data = [restaurant.to_dict() for restaurant in restaurants]
-        with open("data.json", "w") as file:
-            json.dump({
-                "last_updated": start_time.isoformat(),
-                "scrape_duration_seconds": (end_time - start_time).total_seconds(),
-                "restaurants": data
-            }, file, indent=2)
+        try:
+            with open("data.json", "w") as file:
+                json.dump({
+                    "last_updated": start_time.isoformat(),
+                    "scrape_duration_seconds": (end_time - start_time).total_seconds(),
+                    "restaurants": data
+                }, file, indent=2)
+        except Exception as file_error:
+            logger.warning(f"Could not save to data.json: {file_error}")
         
         logger.info(f"Scraping completed in {(end_time - start_time).total_seconds():.2f} seconds")
         
@@ -112,5 +116,18 @@ def health_check():
         "total_restaurants": len(RESTAURANTS)
     })
 
+@app.route("/")
+def index():
+    """Basic home page."""
+    return jsonify({
+        "message": "Restaurant Waitlist Scraper API",
+        "endpoints": {
+            "/api/waitlist": "Get current waitlist data",
+            "/api/health": "Health check"
+        }
+    })
+
 if __name__ == "__main__":
-    app.run(debug=True, host="0.0.0.0", port=5000)
+    # Use PORT environment variable provided by Render
+    port = int(os.environ.get("PORT", 5000))
+    app.run(debug=False, host="0.0.0.0", port=port)
